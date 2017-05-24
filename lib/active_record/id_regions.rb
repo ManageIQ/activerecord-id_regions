@@ -1,3 +1,4 @@
+require "active_record/id_regions/version"
 require_relative 'ar_virtual'
 
 module ArRegion
