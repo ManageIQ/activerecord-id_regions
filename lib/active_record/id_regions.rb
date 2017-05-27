@@ -3,7 +3,6 @@ require "active_support/concern"
 
 require "active_record/id_regions/migration"
 require "active_record/id_regions/version"
-require_relative 'ar_virtual'
 
 module ActiveRecord::IdRegions
   extend ActiveSupport::Concern
@@ -13,25 +12,11 @@ module ActiveRecord::IdRegions
   CID_OR_ID_MATCHER = "\\d+?(#{COMPRESSED_ID_SEPARATOR}\\d+)?".freeze
   RE_COMPRESSED_ID = /^(\d+)#{COMPRESSED_ID_SEPARATOR}(\d+)$/
 
-  included do
-    cache_with_timeout(:id_to_miq_region) { Hash.new }
-  end
-
   def self.anonymous_class_with_ar_region
     @klass_with_ar_region ||= Class.new(ActiveRecord::Base).send(:include, self)
   end
 
   module ClassMethods
-    def inherited(other)
-      if other == other.base_class
-        other.class_eval do
-          virtual_column :region_number,      :type => :integer
-          virtual_column :region_description, :type => :string
-        end
-      end
-      super
-    end
-
     def my_region_number(force_reload = false)
       clear_region_cache if force_reload
       @@my_region_number ||= discover_my_region_number
@@ -172,10 +157,6 @@ module ActiveRecord::IdRegions
 
   def region_description
     miq_region.description if miq_region
-  end
-
-  def miq_region
-    self.class.id_to_miq_region[region_number] || (self.class.id_to_miq_region[region_number] = MiqRegion.where(:region => region_number).first)
   end
 
   def compressed_id
