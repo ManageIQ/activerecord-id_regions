@@ -5,8 +5,16 @@ module ActiveRecord::IdRegions
       super
       return if options[:id] == false
 
-      value = ArRegion.anonymous_class_with_ar_region.rails_sequence_start
+      value = anonymous_class_with_id_regions.rails_sequence_start
       set_pk_sequence!(table_name, value) unless value == 0
+    end
+
+    def anonymous_class_with_id_regions
+      ActiveRecord::IdRegions::Migration.anonymous_class_with_id_regions
+    end
+
+    def self.anonymous_class_with_id_regions
+      @class_with_id_regions ||= Class.new(ActiveRecord::Base).include(ActiveRecord::IdRegions)
     end
   end
 end

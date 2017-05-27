@@ -12,10 +12,6 @@ module ActiveRecord::IdRegions
   CID_OR_ID_MATCHER = "\\d+?(#{COMPRESSED_ID_SEPARATOR}\\d+)?".freeze
   RE_COMPRESSED_ID = /^(\d+)#{COMPRESSED_ID_SEPARATOR}(\d+)$/
 
-  def self.anonymous_class_with_ar_region
-    @klass_with_ar_region ||= Class.new(ActiveRecord::Base).send(:include, self)
-  end
-
   module ClassMethods
     def my_region_number(force_reload = false)
       clear_region_cache if force_reload
@@ -172,6 +168,3 @@ module ActiveRecord::IdRegions
     self.class.split_id(id)
   end
 end
-
-# Temporary backward compatibility
-ArRegion = ActiveRecord::IdRegions
