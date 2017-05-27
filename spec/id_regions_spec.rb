@@ -1,4 +1,4 @@
-describe "AR Regions extension" do
+describe ActiveRecord::IdRegions do
   let(:base_class) { ManageIQ::Providers::Vmware::InfraManager::Vm }
 
   before(:each) do

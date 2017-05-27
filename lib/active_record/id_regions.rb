@@ -1,7 +1,11 @@
+require "active_record"
+require "active_support/concern"
+
+require "active_record/id_regions/migration"
 require "active_record/id_regions/version"
 require_relative 'ar_virtual'
 
-module ArRegion
+module ActiveRecord::IdRegions
   extend ActiveSupport::Concern
 
   DEFAULT_RAILS_SEQUENCE_FACTOR = 1_000_000_000_000

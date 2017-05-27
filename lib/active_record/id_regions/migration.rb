@@ -1,5 +1,5 @@
-module ActiveRecord
-  class Migration
+module ActiveRecord::IdRegions
+  module Migration
     def create_table(table_name, options = {})
       options[:id] = :bigserial if options[:id].nil?
       super
