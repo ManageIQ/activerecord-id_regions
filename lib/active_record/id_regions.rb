@@ -23,23 +23,27 @@ module ActiveRecord::IdRegions
     end
 
     def rails_sequence_factor
-      DEFAULT_RAILS_SEQUENCE_FACTOR
+      @@rails_sequence_factor ||= DEFAULT_RAILS_SEQUENCE_FACTOR
     end
 
-    def rails_sequence_start
-      @@rails_sequence_start ||= my_region_number * rails_sequence_factor
+    def rails_sequence_factor=(factor)
+      @@rails_sequence_factor = factor
     end
 
-    def rails_sequence_end
-      @@rails_sequence_end ||= rails_sequence_start + rails_sequence_factor - 1
+    def rails_sequence_start(region_number = my_region_number)
+      region_number * rails_sequence_factor
     end
 
-    def rails_sequence_range
-      rails_sequence_start..rails_sequence_end
+    def rails_sequence_end(region_number = my_region_number)
+      rails_sequence_start(region_number) + rails_sequence_factor - 1
+    end
+
+    def rails_sequence_range(region_number = my_region_number)
+      rails_sequence_start(region_number)..rails_sequence_end(region_number)
     end
 
     def clear_region_cache
-      @@my_region_number = @@rails_sequence_start = @@rails_sequence_end = nil
+      @@my_region_number = nil
     end
 
     def id_to_region(id)
@@ -127,15 +131,16 @@ module ActiveRecord::IdRegions
     end
 
     def region_number_from_sequence
-      return unless connection.data_source_exists?("miq_databases")
-      id_to_region(connection.select_value("SELECT last_value FROM miq_databases_id_seq"))
+      sequence_name = connection.select_value("SELECT relname FROM pg_class WHERE relkind = 'S' LIMIT 1")
+      return if sequence_name.nil?
+      id_to_region(connection.select_value("SELECT last_value FROM #{sequence_name}"))
     end
 
     private
 
     def discover_my_region_number
-      region_file = File.join(Rails.root, "REGION")
-      region_num = File.read(region_file) if File.exist?(region_file)
+      region_file = Rails.root.join("REGION") if defined?(Rails)
+      region_num = File.read(region_file) if region_file && File.exist?(region_file)
       region_num ||= ENV.fetch("REGION", nil)
       region_num ||= region_number_from_sequence
       region_num.to_i
@@ -167,3 +172,6 @@ module ActiveRecord::IdRegions
     self.class.split_id(id)
   end
 end
+
+# Temporary backward compatibility
+ArRegion = ActiveRecord::IdRegions

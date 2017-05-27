@@ -1,11 +1,9 @@
 describe ActiveRecord::IdRegions do
-  let(:base_class) { ManageIQ::Providers::Vmware::InfraManager::Vm }
-
-  before(:each) do
-    allow(base_class).to receive(:rails_sequence_factor).and_return(10)
+  let!(:base_class) do
+    TestRecord.tap { |m| m.rails_sequence_factor = 10 }
   end
 
-  after(:each) do
+  after do
     base_class.clear_region_cache
   end
 
@@ -78,25 +76,27 @@ describe ActiveRecord::IdRegions do
   end
 
   context "with some records" do
-    before(:each) do
-      # Add dummy records until the ids line up with the @rails_sequence_factor
+    before do
+      # Create records that span 3 regions.  To do so, add dummy records until
+      #   the ids line up with the rails_sequence_factor.
       loop do
-        dummy = FactoryGirl.create(:vm_vmware)
+        dummy = base_class.create!
         @base_id = dummy.id
-        @base_region, small_id = dummy.split_id
-        break if small_id == 0
+        @base_region, short_id = dummy.split_id
+        break if short_id == 0
         dummy.destroy
       end
+      (3 * base_class.rails_sequence_factor - 1).times { base_class.create! } # 1 less because we created the base one above
 
-      allow(base_class).to receive(:my_region_number).and_return(@base_region + 1)
-
-      29.times { FactoryGirl.create(:vm_vmware) } # 1 less because we created the base one above
+      # Set my_region_number to the middle of the 3 regions
+      @middle_region = @base_region + 1
+      allow(base_class).to receive(:my_region_number).and_return(@middle_region)
     end
 
     it ".in_my_region" do
       recs = base_class.in_my_region
       expect(recs.count).to eq(10)
-      expect(recs.all? { |v| v.region_number == base_class.my_region_number }).to be_truthy
+      expect(recs.all? { |v| v.region_number == @middle_region }).to be_truthy
     end
 
     context ".in_region" do
@@ -153,58 +153,60 @@ describe ActiveRecord::IdRegions do
     end
   end
 
-  describe ".my_region_number" do
+  shared_examples_for ".my_region_number discovery" do |has_rails|
     it "reads region from the environment" do
-      reject_db_sequence_lookup
-      allow(ENV).to receive(:fetch).with("REGION", nil).and_return("23")
-      allow(File).to receive(:exist?).with(/REGION/).and_return(false)
-      allow(File).to receive(:read).and_raise(Errno::ENOENT)
-      expect(VmOrTemplate.my_region_number).to eq(23)
+      if has_rails
+        expect(File).to receive(:exist?).with(a_region_pathname).and_return(false)
+      end
+      expect(ENV).to receive(:fetch).with("REGION", nil).and_return("23")
+      expect(base_class.connection).to_not receive(:select_value)
+
+      expect(base_class.my_region_number).to eq(23)
     end
 
-    it "reads region from the REGION file" do
-      reject_db_sequence_lookup
-      allow(ENV).to receive(:fetch).with("REGION", nil).and_return(nil)
-      expect(File).to receive(:exist?).with(/REGION/).and_return(true)
-      expect(File).to receive(:read).with(/REGION/).and_return("33")
-      expect(VmOrTemplate.my_region_number).to eq(33)
+    it "reads region from the database when sequence source exists" do
+      if has_rails
+        expect(File).to receive(:exist?).with(a_region_pathname).and_return(false)
+      end
+      expect(ENV).to receive(:fetch).with("REGION", nil).and_return(nil)
+      expect(base_class.connection).to receive(:select_value).and_return(
+        base_class.table_name, base_class.rails_sequence_factor * 44 + 1
+      )
+
+      expect(base_class.my_region_number).to eq(44)
     end
 
-    it "reads region from the database" do
-      db_sequence_lookup(44)
-      allow(ENV).to receive(:fetch).with("REGION", nil).and_return(nil)
-      allow(File).to receive(:exist?).with(/REGION/).and_return(false)
-      allow(File).to receive(:read).and_raise(Errno::ENOENT)
-      expect(VmOrTemplate.my_region_number).to eq(44)
+    it "falls back to region 0 when sequence source does not exist" do
+      if has_rails
+        expect(File).to receive(:exist?).with(a_region_pathname).and_return(false)
+      end
+      expect(ENV).to receive(:fetch).with("REGION", nil).and_return(nil)
+      expect(base_class.connection).to receive(:select_value).and_return(nil)
+
+      expect(base_class.my_region_number).to eq(0)
+    end
+  end
+
+  describe ".my_region_number" do
+    context "in a non-Rails env" do
+      include_examples ".my_region_number discovery", false
     end
 
-    it "falls back to region 0" do
-      reject_db_sequence_lookup
-      allow(ENV).to receive(:fetch).with("REGION", nil).and_return(nil)
-      allow(File).to receive(:exist?).with(/REGION/).and_return(false)
-      allow(File).to receive(:read).and_raise(Errno::ENOENT)
-      expect(VmOrTemplate.my_region_number).to eq(0)
-    end
+    context "in a Rails env" do
+      before do
+        stub_const("Rails", double(:root => Pathname.new(".")))
+      end
 
-    it "Uses REGION file over all others" do
-      db_sequence_lookup(44)
-      allow(ENV).to receive(:fetch).with("REGION", nil).and_return("23")
-      allow(File).to receive(:exist?).with(/REGION/).and_return(true)
-      allow(File).to receive(:read).with(/REGION/).and_return("33")
-      expect(VmOrTemplate.my_region_number).to eq(33)
-    end
+      it "reads region from the REGION file" do
+        expect(File).to receive(:exist?).with(a_region_pathname).and_return(true)
+        expect(File).to receive(:read).with(a_region_pathname).and_return("33")
+        expect(ENV).to_not receive(:fetch)
+        expect(base_class.connection).to_not receive(:select_value)
 
-    def reject_db_sequence_lookup
-      allow(VmOrTemplate.connection).to receive(:data_source_exists?)
-        .at_least(:once).with("miq_databases").and_return(false)
-    end
+        expect(base_class.my_region_number).to eq(33)
+      end
 
-    def db_sequence_lookup(sequence = nil)
-      allow(VmOrTemplate.connection).to receive(:data_source_exists?)
-        .at_least(:once).with("miq_databases").and_return(true)
-      allow(VmOrTemplate.connection).to receive(:select_value)
-        .at_least(:once).with("SELECT last_value FROM miq_databases_id_seq")
-        .and_return(ArRegion::DEFAULT_RAILS_SEQUENCE_FACTOR * sequence + 1)
+      include_examples ".my_region_number discovery", true
     end
   end
 end

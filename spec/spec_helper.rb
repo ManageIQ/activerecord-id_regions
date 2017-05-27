@@ -23,6 +23,10 @@ RSpec.configure do |config|
   end
 end
 
+RSpec::Matchers.define :a_region_pathname do
+  match { |actual| actual.kind_of?(Pathname) && actual.to_s.end_with?("REGION") }
+end
+
 DB_NAME = "activerecord_id_regions_test".freeze
 
 def drop_test_database
