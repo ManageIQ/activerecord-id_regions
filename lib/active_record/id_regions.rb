@@ -38,6 +38,8 @@ module ActiveRecord::IdRegions
       rails_sequence_start(region_number)..rails_sequence_end(region_number)
     end
 
+    alias region_to_range rails_sequence_range
+
     def clear_region_cache
       @@my_region_number = nil
     end
@@ -48,10 +50,6 @@ module ActiveRecord::IdRegions
 
     def id_in_region(id, region_number)
       region_number * rails_sequence_factor + id
-    end
-
-    def region_to_range(region_number)
-      (region_number * rails_sequence_factor)..(region_number * rails_sequence_factor + rails_sequence_factor - 1)
     end
 
     def region_to_conditions(region_number, col = "id")
