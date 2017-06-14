@@ -154,10 +154,6 @@ module ActiveRecord::IdRegions
   end
   alias_method :region_id, :region_number
 
-  def region_description
-    miq_region.description if miq_region
-  end
-
   def compressed_id
     self.class.compress_id(id)
   end
