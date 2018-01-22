@@ -92,16 +92,19 @@ module ActiveRecord::IdRegions
     #
 
     def compressed_id?(id)
+      ActiveSupport::Deprecation.warn("compressed_id? is deprecated and will be removed in a future release")
       id.to_s =~ /^#{CID_OR_ID_MATCHER}$/
     end
 
     def compress_id(id)
+      ActiveSupport::Deprecation.warn("compress_id is deprecated and will be removed in a future release")
       return nil if id.nil?
       region_number, short_id = split_id(id)
       (region_number == 0) ? short_id.to_s : "#{region_number}#{COMPRESSED_ID_SEPARATOR}#{short_id}"
     end
 
     def uncompress_id(compressed_id)
+      ActiveSupport::Deprecation.warn("uncompress_id is deprecated and will be removed in a future release")
       return nil if compressed_id.nil?
       compressed_id.to_s =~ RE_COMPRESSED_ID ? ($1.to_i * rails_sequence_factor + $2.to_i) : compressed_id.to_i
     end
