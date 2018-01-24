@@ -79,7 +79,7 @@ module ActiveRecord::IdRegions
 
     def split_id(id)
       return [my_region_number, nil] if id.nil?
-      id = uncompress_id(id)
+      id = ActiveSupport::Deprecation.silence { uncompress_id(id) }
 
       region_number = id_to_region(id)
       short_id      = (region_number == 0) ? id : id % (region_number * rails_sequence_factor)
