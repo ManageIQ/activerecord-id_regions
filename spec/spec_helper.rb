@@ -43,9 +43,25 @@ def create_test_database
   ActiveRecord::Base.establish_connection(:adapter => "postgresql", :database => "postgres")
   ActiveRecord::Base.connection.create_database(DB_NAME)
   ActiveRecord::Base.establish_connection(:adapter => "postgresql", :database => DB_NAME)
-  ActiveRecord::Base.connection.create_table("test_records", :id => :bigserial)
+  with_random_region { CreateTestRecordsTable.migrate(:up) }
 end
+
+def with_random_region
+  old_env = ENV.delete("REGION")
+  ENV["REGION"] = rand(1..99).to_s
+  yield
+ensure
+  ENV["REGION"] = old_env
+end
+
+ActiveRecord::Migration.include(ActiveRecord::IdRegions::Migration)
 
 class TestRecord < ActiveRecord::Base
   include ActiveRecord::IdRegions
+end
+
+class CreateTestRecordsTable < ActiveRecord::Migration[5.0]
+  def change
+    create_table :test_records, :id => :bigserial
+  end
 end
