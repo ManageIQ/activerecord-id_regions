@@ -5,6 +5,7 @@ end
 
 require "bundler/setup"
 require "active_record/id_regions"
+require "active_record/id_regions/active_record_migration_patch"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -43,7 +44,7 @@ def create_test_database
   ActiveRecord::Base.establish_connection(:adapter => "postgresql", :database => "postgres")
   ActiveRecord::Base.connection.create_database(DB_NAME)
   ActiveRecord::Base.establish_connection(:adapter => "postgresql", :database => DB_NAME)
-  with_random_region { CreateTestRecordsTable.migrate(:up) }
+  suppress_migration_messages { with_random_region { CreateTestRecordsTable.migrate(:up) } }
 end
 
 def with_random_region
@@ -54,7 +55,16 @@ ensure
   ENV["REGION"] = old_env
 end
 
-ActiveRecord::Migration.include(ActiveRecord::IdRegions::Migration)
+def suppress_migration_messages
+  save, ActiveRecord::Migration.verbose = ActiveRecord::Migration.verbose, false
+  yield
+ensure
+  ActiveRecord::Migration.verbose = save
+end
+
+def migration_versions
+  [5.2, 5.1, 5.0, 4.2]
+end
 
 class TestRecord < ActiveRecord::Base
   include ActiveRecord::IdRegions

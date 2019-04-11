@@ -1,6 +1,7 @@
 require "active_record"
 require "active_support/concern"
 
+require "active_record/id_regions/compatibility"
 require "active_record/id_regions/migration"
 require "active_record/id_regions/version"
 
