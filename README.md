@@ -27,6 +27,20 @@ Or install it yourself as:
 
     $ gem install activerecord-id_regions
 
+## Usage
+
+Include the module in your application_record.rb:
+
+```ruby
+include ActiveRecord::IdRegions
+```
+
+Create an initializer with the following:
+
+```ruby
+require 'active_record/id_regions/active_record_migration_patch'
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
