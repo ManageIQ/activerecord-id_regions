@@ -14,11 +14,13 @@ describe ActiveRecord::IdRegions::Migration do
         end
       end
 
-      Class.new(ActiveRecord::Migration[version]) do
-        def change
-          create_table :testing_correct_sequence
-        end
-      end.migrate(:up)
+      suppress_migration_messages do
+        Class.new(ActiveRecord::Migration[version]) do
+          def change
+            create_table :testing_correct_sequence
+          end
+        end.migrate(:up)
+      end
 
       expect(TestRecord.id_to_region(ActiveRecord::Base.connection.select_value("SELECT last_value FROM testing_correct_sequence_id_seq"))).to eq(region_number_before)
     end
@@ -27,26 +29,30 @@ describe ActiveRecord::IdRegions::Migration do
       let(:klass) { Class.new(ActiveRecord::Base) }
 
       it "id => false, creates no id column" do
-        Class.new(ActiveRecord::Migration[version]) do
-          def change
-            create_table :testing_create_table_id_false, :id => false do |t|
-              t.string "name"
+        suppress_migration_messages do
+          Class.new(ActiveRecord::Migration[version]) do
+            def change
+              create_table :testing_create_table_id_false, :id => false do |t|
+                t.string "name"
+              end
             end
-          end
-        end.migrate(:up)
+          end.migrate(:up)
+        end
 
         klass.table_name = :testing_create_table_id_false
         expect(klass.attribute_names.sort).to eq(%w[name])
       end
 
       it "implicit id, creates bigserial id" do
-        Class.new(ActiveRecord::Migration[version]) do
-          def change
-            create_table :testing_create_table_implicit_id do |t|
-              t.string "name"
+        suppress_migration_messages do
+          Class.new(ActiveRecord::Migration[version]) do
+            def change
+              create_table :testing_create_table_implicit_id do |t|
+                t.string "name"
+              end
             end
-          end
-        end.migrate(:up)
+          end.migrate(:up)
+        end
 
         klass.table_name = :testing_create_table_implicit_id
         expect(klass.attribute_names.sort).to eq(%w[id name])
@@ -54,13 +60,15 @@ describe ActiveRecord::IdRegions::Migration do
       end
 
       it "id => integer, creates bigserial id" do
-        Class.new(ActiveRecord::Migration[version]) do
-          def change
-            create_table :testing_create_table_integer_id, :id => :integer do |t|
-              t.string "name"
+        suppress_migration_messages do
+          Class.new(ActiveRecord::Migration[version]) do
+            def change
+              create_table :testing_create_table_integer_id, :id => :integer do |t|
+                t.string "name"
+              end
             end
-          end
-        end.migrate(:up)
+          end.migrate(:up)
+        end
 
         klass.table_name = :testing_create_table_integer_id
         expect(klass.attribute_names.sort).to eq(%w[id name])
