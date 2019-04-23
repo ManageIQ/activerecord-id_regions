@@ -56,6 +56,10 @@ end
 
 ActiveRecord::Migration.include(ActiveRecord::IdRegions::Migration)
 
+def migration_versions
+  [5.2, 5.1, 5.0, 4.2].select { |v| ActiveRecord::VERSION::STRING >= v.to_s }
+end
+
 class TestRecord < ActiveRecord::Base
   include ActiveRecord::IdRegions
 end
