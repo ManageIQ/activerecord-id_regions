@@ -47,6 +47,7 @@ describe ActiveRecord::IdRegions::Migration do
 
         klass.table_name = :testing_create_table_id_false
         expect(klass.attribute_names.sort).to eq(%w[name])
+        expect(klass.columns_hash["id"]).to be_nil
       end
 
       it "implicit id, creates bigserial id" do
@@ -65,6 +66,7 @@ describe ActiveRecord::IdRegions::Migration do
 
         klass.table_name = :testing_create_table_implicit_id
         expect(klass.attribute_names.sort).to eq(%w[id name])
+        expect(klass.columns_hash["id"].sql_type).to eq "bigint"
         expect(ActiveRecord::Base.connection.select_value("SELECT last_value FROM #{klass.table_name}_id_seq")).to be > TestRecord::DEFAULT_RAILS_SEQUENCE_FACTOR
       end
 
@@ -84,6 +86,7 @@ describe ActiveRecord::IdRegions::Migration do
 
         klass.table_name = :testing_create_table_integer_id
         expect(klass.attribute_names.sort).to eq(%w[id name])
+        expect(klass.columns_hash["id"].sql_type).to eq "bigint"
         expect(ActiveRecord::Base.connection.select_value("SELECT last_value FROM #{klass.table_name}_id_seq")).to be > TestRecord::DEFAULT_RAILS_SEQUENCE_FACTOR
       end
     end
