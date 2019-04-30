@@ -89,6 +89,50 @@ describe ActiveRecord::IdRegions::Migration do
         expect(klass.columns_hash["id"].sql_type).to eq "bigint"
         expect(ActiveRecord::Base.connection.select_value("SELECT last_value FROM #{klass.table_name}_id_seq")).to be > TestRecord::DEFAULT_RAILS_SEQUENCE_FACTOR
       end
+
+      it ":id => :uuid, creates uuid id" do
+        migration =
+          Class.new(ActiveRecord::Migration[version]) do
+            def change
+              enable_extension(ext_name) unless extension_enabled?(ext_name)
+
+              create_table :testing_create_table_uuid_symbol_id, :id => :uuid do |t|
+                t.string "name"
+              end
+            end
+          end
+        migration.send(:define_method, :ext_name) { version <= 5.0 ? "uuid-ossp" : "pgcrypto" }
+
+        suppress_migration_messages do
+          migration.migrate(:up)
+        end
+
+        klass.table_name = :testing_create_table_uuid_symbol_id
+        expect(klass.attribute_names.sort).to eq(%w[id name])
+        expect(klass.columns_hash["id"].sql_type).to eq "uuid"
+      end
+
+      it ":id => 'uuid', creates uuid id" do
+        migration =
+          Class.new(ActiveRecord::Migration[version]) do
+            def change
+              enable_extension(ext_name) unless extension_enabled?(ext_name)
+
+              create_table :testing_create_table_uuid_string_id, :id => "uuid" do |t|
+                t.string "name"
+              end
+            end
+          end
+        migration.send(:define_method, :ext_name) { version <= 5.0 ? "uuid-ossp" : "pgcrypto" }
+
+        suppress_migration_messages do
+          migration.migrate(:up)
+        end
+
+        klass.table_name = :testing_create_table_uuid_string_id
+        expect(klass.attribute_names.sort).to eq(%w[id name])
+        expect(klass.columns_hash["id"].sql_type).to eq "uuid"
+      end
     end
   end
 end
