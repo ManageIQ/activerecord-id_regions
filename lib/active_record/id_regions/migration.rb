@@ -1,10 +1,12 @@
 module ActiveRecord::IdRegions
   module Migration
+    ALLOWED_ID_VALUES = [false, :uuid, "uuid"].freeze
+
     def create_table(table_name, options = {})
-      options[:id] = :bigserial unless options[:id] == false
+      options[:id] = :bigserial unless ALLOWED_ID_VALUES.include?(options[:id])
       value = anonymous_class_with_id_regions.rails_sequence_start
       super
-      return if options[:id] == false
+      return if ALLOWED_ID_VALUES.include?(options[:id])
 
       set_pk_sequence!(table_name, value) unless value == 0
     end

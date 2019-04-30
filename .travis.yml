@@ -1,8 +1,11 @@
+dist: xenial
 language: ruby
 rvm:
  - '2.4.6'
  - '2.5.5'
 cache: bundler
+addons:
+  postgresql: '10'
 after_script: bundle exec codeclimate-test-reporter
 notifications:
   webhooks:
