@@ -2,7 +2,7 @@ module ActiveRecord::IdRegions
   module Migration
     ALLOWED_ID_VALUES = [false, :uuid, "uuid"].freeze
 
-    def create_table(table_name, options = {})
+    def create_table(table_name, **options)
       options[:id] = :bigserial unless ALLOWED_ID_VALUES.include?(options[:id])
       value = anonymous_class_with_id_regions.rails_sequence_start
       super
