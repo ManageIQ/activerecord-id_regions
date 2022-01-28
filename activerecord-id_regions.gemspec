@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 5.0", "< 7.0"
   spec.add_dependency "pg"
 
+  spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "manageiq-style"
   spec.add_development_dependency "rake"
