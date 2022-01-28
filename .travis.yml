@@ -1,10 +1,13 @@
 dist: bionic
 language: ruby
 rvm:
-- 2.6.8
-- 2.7.4
-- 3.0.1
+- 2.6.9
+- 2.7.5
+- 3.0.3
 cache: bundler
+gemfile:
+  - gemfiles/rails_6.0.gemfile
+  - gemfiles/rails_6.1.gemfile
 addons:
   postgresql: '10'
 before_script:
