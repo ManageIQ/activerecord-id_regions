@@ -4,7 +4,6 @@
 [![Build Status](https://travis-ci.org/ManageIQ/activerecord-id_regions.svg)](https://travis-ci.org/ManageIQ/activerecord-id_regions)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/activerecord-id_regions.svg)](https://codeclimate.com/github/ManageIQ/activerecord-id_regions)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/activerecord-id_regions/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/activerecord-id_regions/coverage)
-[![Security](https://hakiri.io/github/ManageIQ/activerecord-id_regions/master.svg)](https://hakiri.io/github/ManageIQ/activerecord-id_regions/master)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/activerecord-id_regions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
