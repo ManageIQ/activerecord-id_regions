@@ -76,3 +76,9 @@ class CreateTestRecordsTable < ActiveRecord::Migration[5.0]
     create_table :test_records, :id => :bigserial
   end
 end
+
+require "active_record"
+require "active_support"
+puts
+puts "\e[93mUsing ActiveRecord #{ActiveRecord.version}\e[0m"
+puts "\e[93mUsing ActiveSupport #{ActiveSupport.version}\e[0m"
