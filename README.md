@@ -1,7 +1,7 @@
 # ActiveRecord::IdRegions
 
 [![Gem Version](https://badge.fury.io/rb/activerecord-id_regions.svg)](http://badge.fury.io/rb/activerecord-id_regions)
-[![Build Status](https://travis-ci.org/ManageIQ/activerecord-id_regions.svg)](https://travis-ci.org/ManageIQ/activerecord-id_regions)
+[![CI](https://github.com/ManageIQ/activerecord-id_regions/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/activerecord-id_regions/actions/workflows/ci.yaml)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/activerecord-id_regions.svg)](https://codeclimate.com/github/ManageIQ/activerecord-id_regions)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/activerecord-id_regions/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/activerecord-id_regions/coverage)
 
