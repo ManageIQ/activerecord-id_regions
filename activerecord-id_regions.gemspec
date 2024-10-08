@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "activerecord-id_regions"
   spec.version       = ActiveRecord::IdRegions::VERSION
   spec.authors       = ["ManageIQ Developers"]
-
+  spec.metadata['rubygems_mfa_required'] = 'true'
   spec.summary       = %q{ActiveRecord extension to allow partitioning ids into regions, for merge replication purposes}
   spec.description   = %q{ActiveRecord extension to allow partitioning ids into regions, for merge replication purposes}
   spec.homepage      = "https://github.com/ManageIQ/activerecord-id_regions"
@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord",  ">= 5.0", "<7.1"
-  spec.add_dependency "activesupport", ">= 5.0", "<7.1"
+  spec.add_dependency "activerecord",  ">= 7.0.8", "<8.0"
+  spec.add_dependency "activesupport", ">= 7.0.8", "<8.0"
   spec.add_dependency "pg"
 
   spec.add_development_dependency "bundler"
