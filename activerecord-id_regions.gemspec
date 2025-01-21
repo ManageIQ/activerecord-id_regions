@@ -20,8 +20,11 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord",  ">= 7.0.8", "<8.0"
-  spec.add_dependency "activesupport", ">= 7.0.8", "<8.0"
+  spec.add_dependency "concurrent-ruby", "< 1.3.5" # Temporary pin down as concurrent-ruby 1.3.5 breaks Rails 7.0, and rails-core doesn't
+                                                   # plan to ship a new 7.0 to fix it. See https://github.com/rails/rails/pull/54264
+
+  spec.add_dependency "activerecord",  ">= 7.0.8.7", "<8.0"
+  spec.add_dependency "activesupport", ">= 7.0.8.7", "<8.0"
   spec.add_dependency "pg"
 
   spec.add_development_dependency "bundler"
