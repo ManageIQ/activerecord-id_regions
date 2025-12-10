@@ -25,8 +25,6 @@ jobs:
         - '3.2'
         - '3.3'
         rails-version:
-        - '7.0'
-        - '7.1'
         - '7.2'
         exclude:
         - ruby-version: '2.7'
