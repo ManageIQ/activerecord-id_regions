@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Add support for rails 8.0
+- Drop support for end of life versions:
+  - rails 7.0, 7.1
+  - ruby 2.7, 3.0, and 3.1
+
 ## [0.5.0] - 2024-10-10
 ### Changed
 
