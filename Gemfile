@@ -5,8 +5,10 @@ gemspec
 
 minimum_version =
   case ENV['TEST_RAILS_VERSION']
+  when "8.0"
+    "~>8.0.4"
   else
-    "~>7.2.1"
+    "~>7.2.3"
   end
 
 gem "activerecord", minimum_version
