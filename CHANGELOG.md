@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-12-11
+
 ### Changed
 - Add support for rails 8.0
 - Drop support for end of life versions:
@@ -28,7 +30,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Loosened active record support to include active record 6.1
 - Fixed keyword arguments for ruby 3.0 support
 
-[Unreleased]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/ManageIQ/activerecord-id_regions/compare/v0.3.1...v0.3.2
